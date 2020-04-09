@@ -5,6 +5,7 @@ import (
 )
 
 func main() {
-	scripts.SignerCount()
-	scripts.Deposits()
+	// scripts.SignerCount()
+	// scripts.Deposits()
+	scripts.RapidFire()
 }
