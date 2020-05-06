@@ -1,39 +1,82 @@
+// package main
+
+// import (
+// 	// "github.com/maticnetwork/monitoring-tools/scripts"
+// 	"github.com/maticnetwork/monitoring-tools/benchmarking"
+// )
+
+// func main() {
+// 	// scripts.SignerCount()
+// 	// scripts.Deposits()
+// 	// scripts.RapidFire()
+// 	benchmarking.RapidFire5()
+// }
+
 package main
 
 import (
-	"context"
-	"fmt"
+	// "fmt"
 	"log"
-	"math/big"
+	"os"
+	"time"
 
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/maticnetwork/monitoring-tools/benchmarking"
+	"github.com/urfave/cli/v2"
 )
 
 func main() {
-	RPCClient, err := rpc.Dial("http://localhost:8545")
-	if err != nil {
-		panic(err)
-	}
+  app := &cli.App{}
+  app.UseShortOptionHandling = true
+  app.Commands = []*cli.Command{
+    {
+      Name:  "txcount",
+      Usage: "Subscribe to blocks and print tx count",
+      Action: func(c *cli.Context) error {
+				benchmarking.SubscribeBlocks()
+        return nil
+      },
+		},
+		{
+      Name:  "fire",
+      Usage: "fire txs",
+      Flags: []cli.Flag{
+        &cli.IntFlag{
+					Name: "txs",
+					Required: true,
+          Usage:   "number of txs to fire",
+          Value: 500,
+				},
+				&cli.IntFlag{
+					Name: "clients",
+					Required: true,
+          Usage:   "Number of nodes to connect to",
+          Value: 1,
+        },
+        &cli.Int64Flag{
+					Name: "seed",
+          Usage:   "seed to generate a random private key",
+          Value: time.Now().Unix(),
+        },
+        &cli.IntFlag{
+					Name: "delay",
+          Usage:   "seed to generate a random private key",
+          Value: 0,
+        },
+			},
+      Action: func(c *cli.Context) error {
+				benchmarking.RapidFire(
+          c.Int("txs"),
+          c.Int("clients"),
+          c.Int64("seed") + time.Now().Unix(),
+          c.Int("delay"),
+        )
+        return nil
+      },
+    },
+  }
 
-	client := ethclient.NewClient(RPCClient)
-
-	latestBlock, err := client.BlockByNumber(context.Background(), nil /* latest */)
-	if err != nil {
-		panic(err)
-	}
-
-	signerCount := make(map[string]int)
-	for i := latestBlock.Header().Number; i.Int64() > 0; i.Sub(i, big.NewInt(1)) {
-		block, err := client.BlockByNumber(context.Background(), i)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		signer := block.Coinbase().Hex()
-		signerCount[signer]++
-	}
-	for key, element := range signerCount {
-		fmt.Println(key, element)
-	}
+  err := app.Run(os.Args)
+  if err != nil {
+    log.Fatal(err)
+  }
 }
