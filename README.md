@@ -16,3 +16,8 @@ go build
 bash benchmarking/benchmark.sh
 ```
 3. [Benchmarking Results](./benchmarking/README.md)
+
+### Other commands
+```
+./monitoring-tools roothash -start 1 -end 10
+```

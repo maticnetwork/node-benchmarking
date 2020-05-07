@@ -42,7 +42,7 @@ func RapidFire(numTxs int, numClients int, seed int64, delay int) {
 
 	type Data struct {
 		clientNumber int
-		tx *types.Transaction
+		tx           *types.Transaction
 	}
 
 	key, _ := crypto.HexToECDSA(randomHex())
@@ -52,7 +52,7 @@ func RapidFire(numTxs int, numClients int, seed int64, delay int) {
 			uint64(i),
 			toAddress,
 			big.NewInt(0), // value in wei,
-			uint64(21000),  // gasLimit
+			uint64(21000), // gasLimit
 			new(big.Int),
 			nil)
 		signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), key)
@@ -62,10 +62,10 @@ func RapidFire(numTxs int, numClients int, seed int64, delay int) {
 		txs[i] = &Data{rand.Intn(numClients), signedTx}
 	}
 	fmt.Printf("constructed %d txs, sleeping for %d seconds before firing them...\n", len(txs), delay)
-	time.Sleep(time.Duration(delay) * time.Second);
+	time.Sleep(time.Duration(delay) * time.Second)
 
 	txHashes := make([]common.Hash, 0, numTxs)
-	for i := numTxs-1; i >= 0; i-- {
+	for i := numTxs - 1; i >= 0; i-- {
 		data := txs[i]
 		txErr := clients[data.clientNumber].SendTransaction(context.Background(), data.tx)
 		if txErr != nil {

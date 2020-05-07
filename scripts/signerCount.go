@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	extraSeal   = 65
+	extraSeal           = 65
 	errMissingSignature = errors.New("extra-data 65 byte signature suffix missing")
 )
 
