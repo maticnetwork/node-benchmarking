@@ -1,5 +1,6 @@
-# Monitoring Tool
-Used to log and monitor activities on the network by attaching to heimdall and bor nodes
+# Benchmarking
+
+It contains node benchmarking scripts
 
 ### Build
 ```
